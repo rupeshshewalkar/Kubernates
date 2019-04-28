@@ -19,6 +19,150 @@ deployment.extensions "kuard" deleted
 NAME                    READY   STATUS        RESTARTS   AGE
 kuard-9896fdb64-rtftz   0/1     Terminating   0          37m
 
+Applying pod
+-----------
+[root@k8s-master kubernates-files]# kubectl apply -f 1-creating-pod.yaml
+pod/kuard created
+
+[root@k8s-master kubernates-files]# kubectl get pods
+NAME    READY   STATUS    RESTARTS   AGE
+kuard   1/1     Running   0          8s
+[root@k8s-master kubernates-files]#
+
+Pod Details
+-----------
+
+[root@k8s-master kubernates-files]# kubectl describe pods kuard
+Name:               kuard
+Namespace:          default
+Priority:           0
+PriorityClassName:  <none>
+Node:               k8s-node/172.31.38.30
+Start Time:         Sun, 28 Apr 2019 07:44:59 +0000
+Labels:             <none>
+Annotations:        kubectl.kubernetes.io/last-applied-configuration:
+                      {"apiVersion":"v1","kind":"Pod","metadata":{"annotations":{},"name":"kuard","namespace":"default"},"spec":{"containers":[{"image":"gcr.io/...
+Status:             Running
+IP:                 10.44.0.5
+Containers:
+  kuard:
+    Container ID:   docker://ad24f20c7e5bd5703d4e2bc7c981a47ed7546073e956544bf5e015817f66b60e
+    Image:          gcr.io/kuar-demo/kuard-amd64:1
+    Image ID:       docker-pullable://gcr.io/kuar-demo/kuard-amd64@sha256:bd17153e9a3319f401acc7a27759243f37d422c06cbbf01cb3e1f54bbbfe14f4
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Sun, 28 Apr 2019 07:45:00 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-bz6ws (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  default-token-bz6ws:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-bz6ws
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  85s   default-scheduler  Successfully assigned default/kuard to k8s-node
+  Normal  Pulled     84s   kubelet, k8s-node  Container image "gcr.io/kuar-demo/kuard-amd64:1" already present on machine
+  Normal  Created    84s   kubelet, k8s-node  Created container kuard
+  Normal  Started    84s   kubelet, k8s-node  Started container kuard
+[root@k8s-master kubernates-files]#
+
+
+Accessing pod Using Port Forwarding
+-----------------------------------
+[root@k8s-master kubernates-files]#  kubectl port-forward kuard 8080:8080
+Forwarding from 127.0.0.1:8080 -> 8080
+Forwarding from [::1]:8080 -> 8080
+Handling connection for 8080
+Handling connection for 8080
+Handling connection for 8080
+Handling connection for 8080
+^C[root@k8s-master kubernates-files]#
+
+
+Getting More Info with Logs
+---------------------------
+
+[root@k8s-master ~]# kubectl logs kuard
+2019/04/28 07:45:00 Starting kuard version: v0.8.1-1
+2019/04/28 07:45:00 **********************************************************************
+2019/04/28 07:45:00 * WARNING: This server may expose sensitive
+2019/04/28 07:45:00 * and secret information. Be careful.
+2019/04/28 07:45:00 **********************************************************************
+2019/04/28 07:45:00 Config:
+{
+  "address": ":8080",
+  "debug": false,
+  "debug-sitedata-dir": "./sitedata",
+  "keygen": {
+    "enable": false,
+    "exit-code": 0,
+    "exit-on-complete": false,
+    "memq-queue": "",
+    "memq-server": "",
+    "num-to-gen": 0,
+    "time-to-run": 0
+  },
+  "liveness": {
+    "fail-next": 0
+  },
+  "readiness": {
+    "fail-next": 0
+  },
+  "tls-address": ":8443",
+  "tls-dir": "/tls"
+}
+2019/04/28 07:45:00 Could not find certificates to serve TLS
+2019/04/28 07:45:00 Serving on HTTP on :8080
+2019/04/28 07:53:33 127.0.0.1:47100 GET /
+2019/04/28 07:53:33 Loading template for index.html
+2019/04/28 07:53:51 127.0.0.1:47108 GET /
+2019/04/28 07:56:38 127.0.0.1:47162 GET /
+2019/04/28 07:56:44 127.0.0.1:47166 GET /
+[root@k8s-master ~]#
+
+
+
+Running Commands in Your Container with exec
+--------------------------------------------
+[root@k8s-master kubernates-files]# kubectl exec kuard date
+Sun Apr 28 08:09:45 UTC 2019
+
+
+ interactive session by adding the -it flags:
+ --------------------------------------------
+ [root@k8s-master kubernates-files]# kubectl exec -it kuard ash
+~ $
+~ $ ls -al
+
+Copying Files to and from Containers
+------------------------------------
+[root@k8s-master ~]# kubectl cp kuard:/kuard kuard
+tar: removing leading '/' from member names
+
+[root@k8s-master ~]# kubectl cp test.log kuard:/tmp
+[root@k8s-master ~]# kubectl exec kuard cat /tmp/test.log
+testing log which will copy inside container
+
+[root@k8s-master ~]# kubectl exec kuard -it sh
+~ $ ls -al /tmp/test.log
+-rw-r--r--    1 nobody   nobody          45 Apr 28 08:15 /tmp/test.log
+
 
 
 
