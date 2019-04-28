@@ -1,1 +1,26 @@
 
+Creating pod 
+------------
+kubectl run kuard --image=gcr.io/kuar-demo/kuard-amd64:1
+
+
+Listing pod
+-----------
+[root@k8s-master ~]# kubectl get pods
+NAME                    READY   STATUS    RESTARTS   AGE
+kuard-9896fdb64-rtftz   1/1     Running   0          36m
+
+
+Deleting pod
+-----------
+[root@k8s-master ~]# kubectl delete deployments/kuard
+deployment.extensions "kuard" deleted
+[root@k8s-master ~]# kubectl get pods
+NAME                    READY   STATUS        RESTARTS   AGE
+kuard-9896fdb64-rtftz   0/1     Terminating   0          37m
+
+
+
+
+
+
