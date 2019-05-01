@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-security-context
+  namespace: rupesh
+spec:
+  securityContext:
+     runAsUser: 1004
+     fsGroup: 1006
+  containers:
+    - name: my-security-context-container
+      image: busybox
+      command: ['sh', '-c', 'id && sleep 3600' ]
+      

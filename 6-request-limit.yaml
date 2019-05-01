@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: pod-resource-limit
+  namespace: rupesh
+  labels:
+    app: resource-usages
+spec:
+  containers:
+  - name: container-resource-limit
+    image: busybox
+    command: [ 'sh', '-c', 'echo pod with resource limit && sleep 7200' ]
+    resources:
+     requests:
+       memory: "64Mi"
+       cpu: "250m"
+     limits:
+       memory: "128Mi"
+       cpu: "500m"
