@@ -1,0 +1,19 @@
+#Readiness Probe: Determines whether the container is ready to serve requests - Requests #will not be forwarded to the container until the readiness probe succeeds.
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: pod-with-readiness
+ namespace: rupesh
+ labels:
+  app: readiness
+spec:
+ containers:
+ - name: container-readiness
+   image: busybox
+   readinessProbe:
+     httpGet:
+       path: /
+       port: 80
+     initialDelaySeconds: 5
+     periodSeconds: 5

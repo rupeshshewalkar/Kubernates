@@ -1,0 +1,22 @@
+#Deployment: Defines a desired state for a set of replica pods, and works to maintain tha#t state by creating,removing, and modifying those pods
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+ name: first-deployment-nginx
+ namespace: rupesh
+spec:
+ replicas: 3
+ selector:
+  matchLabels:
+   apps: nginx
+
+ template:
+  metadata:
+   labels:
+    apps: nginx
+  spec:
+   containers:
+   - name: my-nginx
+     image: nginx
+     ports:
+     - containerPort: 80 

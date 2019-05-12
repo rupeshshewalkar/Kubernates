@@ -1,0 +1,17 @@
+#Annotation: Key-value object metadata, but cannot be used to identify objects and cannot be used in a
+#
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: pod-annotation
+  namespace: rupesh
+  labels:
+   apps: app-with-pod-annotation
+  annotations:
+   owner: shewalkar.rupesh@gmail.com
+spec:
+  containers:
+  - name: container-annotation
+    image: nginx
+    ports:
+     - containerPort: 80    

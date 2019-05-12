@@ -2,4 +2,81 @@
 
 #Adapter: An adapter container transforms the output of the main container. Example: An adapter container reads log output from the main container and transforms it.
 
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: fluentd-config
+  namespace: rupesh
+data:
+  fluentd.conf: |-
+     <source>
+       type tail
+       format none
+       path /var/log/1.log
+       pos_file /var/log/1.log.pos
+       tag count.format1
+     </source>
+     <source>
+       type tail
+       format none
+       path /var/log/2.log
+       pos_file /var/log/2.log.pos
+       tag count.format2
+     </source>
+     <match **>
+       @type file
+       path /var/logout/count
+       time_slice_format %Y%m%d%H%M%S
+       flush_interval 5s
+       log_level trace
+     </match>
 
+---
+apiVersion: v1
+kind: Pod
+metadata:
+ name: adapter-pod
+ namespace: rupesh
+ labels:
+   apps: adapter
+spec:
+ containers:
+ - name: log-geneter
+   image: busybox
+   args:
+   - /bin/sh
+   - -c 
+   - > 
+     i=0;
+     while true;
+     do 
+       echo "$i: $(date)" >> /var/log/1.log;
+       echo "$(date) INFO $i" >> /var/log/2.log;
+       i=$((i+1));
+       sleep 1;
+     done
+   volumeMounts:
+   - name: varlog
+     mountPath: /var/log
+ - name: log-agent
+   image: k8s.gcr.io/fluentd-gcp:1.30
+   env:
+   - name: FLUENTD_ARGS
+     value: -c /etc/fluentd-config/fluentd.conf
+   volumeMounts:
+   - name: varlog
+     mountPath: /var/log
+   - name: config-vol
+     mountPath: /etc/fluentd-config
+   - name: logout
+     mountPath: /var/logout
+
+ volumes:
+ - name: varlog
+   emptyDir: {}
+ - name: config-vol
+   configMap:
+     name: fluentd-config
+ - name: logout
+   hostPath:
+     path: /home/cloud_user/log_output

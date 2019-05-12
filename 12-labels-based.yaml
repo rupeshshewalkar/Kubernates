@@ -1,0 +1,19 @@
+#Label: Key-value object metadata used to identify, select, and group objects
+#Selector: Used to select a group of objects using labels
+#Equality-based selectors: app=my-app, environment!=production
+#
+apiVersion: v1
+kind: Pod
+metadata:
+ name: pod-with-label
+ namespace: rupesh
+ labels:
+   app: podlabel
+   environment: dev
+spec:
+ containers:
+ - name: container-label
+   image: nginx
+   ports:
+   - containerPort: 80
+

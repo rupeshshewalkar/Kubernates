@@ -1,0 +1,17 @@
+##Rolling update: Gradually rolling out a change to a set of replica pods to avoid downtime
+#This is how you can perform a rolling update using a deployment:
+
+ kubectl set image deployment/<deployment name> <container name>=<image name> --record
+ 
+#This sets the image for the deployment to the value specified for <image name>.
+#--record records the changes made during the rolling update. This data can be used later# to roll back the change
+
+
+#Rollback: Reverting to a previous state after an update Get a list of previous rolling updates like so:
+   kubectl rollout history deployment/<deployment name>
+#Use the --revision flag to get more information on a specific revision: 
+  kubectl rollout history deployment/<deployment name> --revision=<revision number>
+#You can rollback to the state before last revision with kubectl rollout undo:
+  kubectl rollout undo deployment.v1.apps/<deployment name>
+#Or use the --to-revision flag to roll back to a specific earlier revision:
+  kubectl rollout undo deployment.v1.apps/<deployment name> --to-revision=<revision number>

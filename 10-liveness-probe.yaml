@@ -1,0 +1,22 @@
+#Liveness probe: Determines whether the container is running properly - When a liveness probe fails, the
+#container will be shut down or restarted, depending on its RestartPolicy
+
+apiVersion: v1
+kind: Pod
+metadata: 
+ name: pod-with-liveness
+ namespace: rupesh
+ labels:
+  apps: app-with-liveness
+spec:
+ containers:
+ - name: container-liveness
+   image: busybox
+   command: ['sh', '-c', 'echo pod with liveness monitoring && sleep 3600']
+   livenessProbe:
+     exec:
+       command:
+       - echo
+       - testing
+     initialDelaySeconds: 5
+     periodSeconds: 5
